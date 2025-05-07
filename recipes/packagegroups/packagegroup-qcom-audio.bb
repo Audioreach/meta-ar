@@ -28,12 +28,6 @@ PULSEAUDIO_PKGS = " \
     pulseaudio-module-pal-card \
     pulseaudio-module-pal-voiceui-card \
 "
-RDEPENDS:${PN} = ' \
-    alsa-utils-alsaucm \
-    alsa-utils-aplay \
-    alsa-utils-alsatplg \
-    qcom-audio-firmware \
-'
 
 RDEPENDS:${PN} = ' \
     tinyalsa \
