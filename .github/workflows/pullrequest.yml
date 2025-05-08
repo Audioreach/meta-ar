@@ -25,6 +25,7 @@ jobs:
           if [ -d "meta-qcom" ]; then
             echo "Directory meta-qcom already exists. Pulling latest changes."
             cd meta-qcom
+            git reset --hard origin/master
             git pull origin master
           else
             echo "Directory meta-qcom does not exist. Cloning repository."
