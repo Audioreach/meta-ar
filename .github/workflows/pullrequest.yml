@@ -32,12 +32,18 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Get UID and GID
+        id: ids
+        run: |
+          echo "uid=$(id -u)" >> $GITHUB_OUTPUT
+          echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
       - name: Build
         uses: addnab/docker-run-action@v3
         with:
           image: test-image
-          options: -u $(id -u):$(id -g) --rm -v "$(pwd)":"$(pwd)" -v ~/.ssh:/home/${USER}/.ssh -w "$(pwd)"
+          options: -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} --rm -v "$(pwd)":"$(pwd)" -v ~/.ssh:/home/${USER}/.ssh -w "$(pwd)"
           run: |
             #!/bin/bash
             set -e
