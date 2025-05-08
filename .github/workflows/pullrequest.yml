@@ -53,9 +53,10 @@ jobs:
           run: |
             #!/bin/bash
             set -e
-            echo $whoami
             kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml 
             # Applying patch for kernel compilation fix
+            ls -l
+            
             cd ../meta-qcom
             git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
             cd ../build
