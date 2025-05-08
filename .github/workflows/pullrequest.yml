@@ -39,9 +39,6 @@ jobs:
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
-          echo "$(id -u)"
-          echo "$(id -g)"
-
       - name: Build
         uses: addnab/docker-run-action@v3
         with:
@@ -49,12 +46,14 @@ jobs:
           options: >-
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
-             -v ${{ github.workspace }}/..:/home/${USER}/workspace 
+             -v ${{ github.workspace }}/..:/home/hasibur/workspace 
              -v /usr2/hasiburr/.ssh:/home/hasiburr/.ssh
              -w /home/hasiburr/workspace
+             --privileged
           run: |
             #!/bin/bash
             set -e
+            echo $whoami
             kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml 
             # Applying patch for kernel compilation fix
             cd ../meta-qcom
