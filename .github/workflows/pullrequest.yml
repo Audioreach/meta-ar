@@ -39,6 +39,9 @@ jobs:
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
+          echo "$(id -u)"
+          echo "$(id -g)"
+
       - name: Build
         uses: addnab/docker-run-action@v3
         with:
