@@ -1,12 +1,12 @@
 ---
-name: pullrequest
-run-name: pullrequest-${{ github.event.pull_request.number }}
+name: pre_merge
+run-name: pre_merge ${{ github.event.pull_request.number != '' && github.event.pull_request.number }}
 on:
   workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - main
+      - mains
     paths-ignore:
       - .github/*
 
