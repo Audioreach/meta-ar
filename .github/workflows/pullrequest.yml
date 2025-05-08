@@ -54,6 +54,7 @@ jobs:
              --rm 
              -v ${{ github.workspace }}/..:/home/hasiburr/workspace 
              -v /usr2/hasiburr/.ssh:/home/hasiburr/.ssh
+             -v /usr2/hasiburr/.gitconfig:/home/hasiburr/.gitconfig
              -w /home/hasiburr/workspace
              --privileged
           run: |
