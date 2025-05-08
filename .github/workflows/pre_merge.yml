@@ -6,10 +6,25 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - mains
+      - main
     paths-ignore:
       - .github/*
 
+env:
+  BRANCH: ${{ github.event.pull_request.head.ref }}
+
 jobs:
+  load_parameters:
+    outputs:
+      build_matrix: ${{ steps.load_parameters.outputs.build_matrix }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load parameters
+        id: load_parameters
+        uses: ./.github/actions/loading
+
   build:
-    uses: Audioreach/meta-ar/.github/workflows/REUSABLE_WORKFLOW_build.yml@main
+    needs: load_parameters
+    uses: ./.github/workflows/REUSABLE_WORKFLOW_build.yml
+    with:
+      build_matrix: ${{ fromJson(needs.load_parameters.outputs.build_matrix) }}

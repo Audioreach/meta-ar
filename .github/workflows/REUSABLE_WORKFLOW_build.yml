@@ -2,10 +2,19 @@
 name: _build
 on:
   workflow_call:
+    inputs:
+      build_matrix:
+        required: true
+        type: string
+        description: Build matrix for the build job
 
 jobs:
   build:
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        build_matrix: ${{ fromJson(inputs.build_matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,7 +42,7 @@ jobs:
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
-      - name: Build
+      - name: Build for ${{ matrix.build_matrix.machine }}
         uses: addnab/docker-run-action@v3
         with:
           image: test-image
@@ -48,7 +57,7 @@ jobs:
           run: |
             #!/bin/bash
             set -e
-            kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml -c "
+            kas shell meta-ar/ci/${{ matrix.build_matrix.kas_file }} -c "
               cd ../meta-qcom
               git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
               cd ../build
