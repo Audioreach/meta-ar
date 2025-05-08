@@ -1,0 +1,57 @@
+---
+name: _build
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Clone meta-qcom repository
+        run: |
+          # Clone the meta-qcom repository
+          cd ${{ github.workspace }}/..
+          # Check if the directory already exists
+          if [ -d "meta-qcom" ]; then
+            echo "Directory meta-qcom already exists. Pulling latest changes."
+            cd meta-qcom
+            git reset --hard origin/master
+            git pull origin master
+          else
+            echo "Directory meta-qcom does not exist. Cloning repository."
+            git clone https://github.com/qualcomm-linux/meta-qcom.git
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get UID and GID
+        id: ids
+        run: |
+          echo "uid=$(id -u)" >> $GITHUB_OUTPUT
+          echo "gid=$(id -g)" >> $GITHUB_OUTPUT
+
+      - name: Build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: test-image
+          options: >-
+             -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
+             --rm 
+             -v ${{ github.workspace }}/..:/home/hasiburr/workspace 
+             -v /usr2/hasiburr/.ssh:/home/hasiburr/.ssh
+             -v /usr2/hasiburr/.gitconfig:/home/hasiburr/.gitconfig
+             -w /home/hasiburr/workspace
+             --privileged
+          run: |
+            #!/bin/bash
+            set -e
+            kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml -c "
+              cd ../meta-qcom
+              git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
+              cd ../build
+              umask 022
+              bitbake packagegroup-qcom-audio
+            "
