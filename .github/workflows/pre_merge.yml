@@ -17,6 +17,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: get token
+        id: get_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Clone meta-qcom repository
         run: |
           # Clone the meta-qcom repository
@@ -32,7 +39,7 @@ jobs:
             git clone https://github.com/qualcomm-linux/meta-qcom.git
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.get_token.outputs.token }}
       
       - name: Get UID and GID
         id: ids
