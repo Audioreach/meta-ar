@@ -20,7 +20,7 @@ jobs:
       - name: Clone meta-qcom repository
         run: |
           # Clone the meta-qcom repository
-          cd ${{ github.workspace }}
+          cd ${{ github.workspace }}/..
           # Check if the directory already exists
           if [ -d "meta-qcom" ]; then
             echo "Directory meta-qcom already exists. Pulling latest changes."
@@ -47,7 +47,7 @@ jobs:
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
              -v ${{ github.workspace }}/..:/home/${USER}/workspace 
-             -v ~/.ssh:/home/${USER}/.ssh
+             -v /usr2/hasiburr/.ssh:/home/${USER}/.ssh
              -w /home/${USER}/workspace
           run: |
             #!/bin/bash
