@@ -40,10 +40,10 @@ jobs:
           options: >-
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
-             -v ${{ github.workspace }}/..:/home/hasiburr/workspace 
-             -v /usr2/hasiburr/.ssh:/home/hasiburr/.ssh
-             -v /usr2/hasiburr/.gitconfig:/home/hasiburr/.gitconfig
-             -w /home/hasiburr/workspace
+             -v ${{ github.workspace }}/..:/home/$USER/workspace 
+             -v /usr2/$USER/.ssh:/home/$USER/.ssh
+             -v /usr2/$USER/.gitconfig:/home/$USER/.gitconfig
+             -w /home/$USER/workspace
              --privileged
           run: |
             #!/bin/bash
