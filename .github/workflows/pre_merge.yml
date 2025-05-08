@@ -27,4 +27,4 @@ jobs:
     needs: load_parameters
     uses: ./.github/workflows/REUSABLE_WORKFLOW_build.yml
     with:
-      build_matrix: ${{ fromJson(needs.load_parameters.outputs.build_matrix) }}
+      build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
