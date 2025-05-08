@@ -43,7 +43,12 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: test-image
-          options: -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} --rm -v "$(pwd)":"$(pwd)" -v ~/.ssh:/home/${USER}/.ssh -w "$(pwd)"
+          options: >-
+             -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
+             --rm 
+             -v ${{ github.workspace }}/..:/home/${USER}/workspace 
+             -v ~/.ssh:/home/${USER}/.ssh
+             -w /home/${USER}/workspace
           run: |
             #!/bin/bash
             set -e
