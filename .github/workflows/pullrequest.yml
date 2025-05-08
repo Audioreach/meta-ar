@@ -47,8 +47,8 @@ jobs:
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
              -v ${{ github.workspace }}/..:/home/${USER}/workspace 
-             -v /usr2/hasiburr/.ssh:/home/${USER}/.ssh
-             -w /home/${USER}/workspace
+             -v /usr2/hasiburr/.ssh:/home/hasiburr/.ssh
+             -w /home/hasiburr/workspace
           run: |
             #!/bin/bash
             set -e
