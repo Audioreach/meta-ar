@@ -1,0 +1,51 @@
+---
+name: pullrequest
+run-name: pullrequest-${{ github.event.pull_request.number }}
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    paths-ignore:
+      - .github/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Clone meta-qcom repository
+        run: |
+          # Clone the meta-qcom repository
+          cd ${{ github.workspace }}
+          # Check if the directory already exists
+          if [ -d "meta-qcom" ]; then
+            echo "Directory meta-qcom already exists. Pulling latest changes."
+            cd meta-qcom
+            git pull origin main
+          else
+            echo "Directory meta-qcom does not exist. Cloning repository."
+            git clone https://github.com/qualcomm-linux/meta-qcom.git
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        uses: addnab/docker-run-action@v3
+        with:
+          image: test-image
+          options: -u $(id -u):$(id -g) --rm -v "$(pwd)":"$(pwd)" -v ~/.ssh:/home/${USER}/.ssh -w "$(pwd)"
+          run: |
+            #!/bin/bash
+            set -e
+            cd ..
+            kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml 
+            # Applying patch for kernel compilation fix
+            cd ../meta-qcom
+            git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
+            cd ../build
+            umask 022
+            bitbake packagegroup-qcom-audio
