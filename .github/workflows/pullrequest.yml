@@ -52,7 +52,6 @@ jobs:
           run: |
             #!/bin/bash
             set -e
-            cd ..
             kas shell meta-ar/ci/qcs6490-rb3gen2-core-kit.yml 
             # Applying patch for kernel compilation fix
             cd ../meta-qcom
