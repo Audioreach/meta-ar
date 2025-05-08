@@ -1,0 +1,27 @@
+---
+name: nightly
+run-name: nightly ${{ github.run_id }}
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 15 * * *' # Every day at 15:30 UTC
+
+jobs:
+  load_parameters:
+    outputs:
+      build_matrix: ${{ steps.load_parameters.outputs.build_matrix }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load parameters
+        id: load_parameters
+        uses: ./.github/actions/loading
+
+  build:
+    needs: load_parameters
+    uses: ./.github/workflows/REUSABLE_WORKFLOW_build.yml
+    with:
+      build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
