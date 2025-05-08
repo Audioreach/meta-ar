@@ -40,11 +40,6 @@ jobs:
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
-      - name: Setup git config
-        run: |
-          git config --global user.name "Github Action"
-          git config --global user.email "actions@github.com"
-
       - name: Build
         uses: addnab/docker-run-action@v3
         with:
