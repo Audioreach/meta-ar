@@ -18,3 +18,4 @@ runs:
           const file = require('./ci/MACHINES.json');
           const matrix = Object.entries(file).map(([machine, kas_file]) => ({ machine, kas_file }));
           core.setOutput('build_matrix', JSON.stringify(matrix));
+          console.log(matrix);

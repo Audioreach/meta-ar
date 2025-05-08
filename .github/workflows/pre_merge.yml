@@ -10,9 +10,6 @@ on:
     paths-ignore:
       - .github/*
 
-env:
-  BRANCH: ${{ github.event.pull_request.head.ref }}
-
 jobs:
   load_parameters:
     outputs:
