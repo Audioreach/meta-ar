@@ -41,6 +41,7 @@ local_conf_header:
     INHERIT += "buildstats buildstats-summary"
     INHERIT += "buildhistory"
     INHERIT += "rm_work"
+    IMAGE_INSTALL:append = "packagegroup-qcom-audio"
   qcomflash: |
     IMAGE_CLASSES += "image_types_qcom"
     IMAGE_FSTYPES += "qcomflash"
