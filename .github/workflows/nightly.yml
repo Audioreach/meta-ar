@@ -4,8 +4,8 @@ run-name: nightly
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 15 * * *' # Every day at 15:30 UTC
+  # schedule:
+  #   - cron: '30 15 * * *' # Every day at 15:30 UTC
 
 jobs:
   load_parameters:
