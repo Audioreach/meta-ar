@@ -9,7 +9,7 @@ outputs:
 
   docker_image:
     description: Docker image
-    value: ${{ steps.get-docker-image.outputs.result }}
+    value: ${{ steps.get-docker-image.outputs.image_name }}
 
 runs:
   using: "composite"
@@ -30,6 +30,6 @@ runs:
       with:
         script: |
           const fs = require('fs')
-          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt')
+          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').toString().trim()
+          core.setOutput('image_name', image)
           console.log(image)
-          return image
