@@ -1,6 +1,6 @@
 ---
 name: nightly
-run-name: nightly ${{ github.run_id }}
+run-name: nightly
 
 on:
   workflow_dispatch:
