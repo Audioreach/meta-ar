@@ -1,2 +1,1 @@
-#This file will contain the name and tag of the docker image
-#This will help in updating the image whenever necessary.
+test-image:latest

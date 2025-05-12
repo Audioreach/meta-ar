@@ -7,6 +7,10 @@ outputs:
     description: Build matrix
     value: ${{ steps.set-matrix.outputs.build_matrix }}
 
+  docker_image:
+    description: Docker image
+    value: ${{ steps.get-docker-image.outputs.result }}
+
 runs:
   using: "composite"
   steps:
@@ -19,3 +23,13 @@ runs:
           const matrix = Object.entries(file).map(([machine, kas_file]) => ({ machine, kas_file }));
           core.setOutput('build_matrix', JSON.stringify(matrix));
           console.log(matrix);
+
+    - name: Get docker image
+      id: get-docker-image
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs')
+          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').toString().trim()
+          console.log(image)
+          return image

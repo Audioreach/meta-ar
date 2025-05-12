@@ -8,6 +8,11 @@ on:
         type: string
         description: Build matrix for the build job
 
+      docker_image:
+        required: true
+        type: string
+        description: Docker image to use for the build job
+
 jobs:
   build:
     runs-on: self-hosted
@@ -45,7 +50,7 @@ jobs:
       - name: Build for ${{ matrix.build_matrix.machine }}
         uses: addnab/docker-run-action@v3
         with:
-          image: test-image
+          image: ${{ inputs.docker_image }}
           options: >-
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
