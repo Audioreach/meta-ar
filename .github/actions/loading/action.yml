@@ -30,6 +30,6 @@ runs:
       with:
         script: |
           const fs = require('fs')
-          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').toString().trim()
+          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').trim()
           console.log(image)
           return image

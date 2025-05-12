@@ -50,7 +50,7 @@ jobs:
       - name: Build for ${{ matrix.build_matrix.machine }}
         uses: addnab/docker-run-action@v3
         with:
-          image: "${{ inputs.docker_image }}"
+          image: ${{ inputs.docker_image }}
           options: >-
              -u ${{ steps.ids.outputs.uid }}:${{ steps.ids.outputs.gid }} 
              --rm 
