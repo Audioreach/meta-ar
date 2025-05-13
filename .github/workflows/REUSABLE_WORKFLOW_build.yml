@@ -77,16 +77,16 @@ jobs:
 
           # Define variables
           IMAGE="${{ inputs.docker_image }}"
-          UID=${{ steps.ids.outputs.uid }}
-          GID=${{ steps.ids.outputs.gid }}
+          USER_ID=${{ steps.ids.outputs.uid }}
+          GROUP_ID=${{ steps.ids.outputs.gid }}
           WORKSPACE=${{ github.workspace }}/..
           SSH_DIR="/usr2/hasiburr/.ssh"
           GITCONFIG="/usr2/hasiburr/.gitconfig"
           USER_HOME="/home/hasiburr"
 
           docker run \
-            -u ${UID}:${GID} \
-            --rm \
+            -u ${USER_ID}:${GROUP_ID} \
+            --rm \s
             -v ${WORKSPACE}:${USER_HOME}/workspace \
             -v ${SSH_DIR}:${USER_HOME}/.ssh \
             -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
