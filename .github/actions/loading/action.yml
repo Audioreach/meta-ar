@@ -1,5 +1,5 @@
 ---
-name: Load parameters
+name: Load Parameters
 description: Load parameters for the build job
 
 outputs:
@@ -14,7 +14,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Set build matrix
+    - name: Set Build Matrix
       id: set-matrix
       uses: actions/github-script@v7
       with:
@@ -24,7 +24,7 @@ runs:
           core.setOutput('build_matrix', JSON.stringify(matrix));
           console.log(matrix);
 
-    - name: Get docker image
+    - name: Get Docker Image
       id: get-docker-image
       uses: actions/github-script@v7
       with:
