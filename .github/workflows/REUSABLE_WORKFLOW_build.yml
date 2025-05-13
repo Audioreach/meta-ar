@@ -76,7 +76,6 @@ jobs:
           set -e
 
           # Define variables
-          IMAGE="${{ inputs.docker_image }}"
           USER_ID=${{ steps.ids.outputs.uid }}
           GROUP_ID=${{ steps.ids.outputs.gid }}
           WORKSPACE=${{ github.workspace }}/..
@@ -92,7 +91,7 @@ jobs:
             -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
             -w ${USER_HOME}/workspace \
             --privileged \
-            ${IMAGE} \
+            ${{ inputs.docker_image }} \
             bash -c "
               set -e
               kas shell meta-ar/ci/${{ matrix.build_matrix.kas_file }} -c '
