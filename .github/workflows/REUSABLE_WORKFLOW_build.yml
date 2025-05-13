@@ -85,7 +85,7 @@ jobs:
 
           docker run \
             -u ${USER_ID}:${GROUP_ID} \
-            --rm \s
+            --rm \
             -v ${WORKSPACE}:${USER_HOME}/workspace \
             -v ${SSH_DIR}:${USER_HOME}/.ssh \
             -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
