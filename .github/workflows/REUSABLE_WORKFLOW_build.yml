@@ -48,34 +48,17 @@ jobs:
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
       - name: Build for ${{ matrix.build_matrix.machine }}
+        uses: ./.github/actions/build
+        with:
+          docker_image: ${{ inputs.docker_image }}
+          uid: ${{ steps.ids.outputs.uid }}
+          gid: ${{ steps.ids.outputs.gid }}
+          kas_file: ${{ matrix.build_matrix.kas_file }}
+        env:
+          MACHINE: ${{ matrix.build_matrix.machine }}
+
+      - name: Cleanup Workspace
         run: |
-          #!/bin/bash
-          set -e
-
-          # Define variables
-          USER_ID=${{ steps.ids.outputs.uid }}
-          GROUP_ID=${{ steps.ids.outputs.gid }}
-          WORKSPACE=${{ github.workspace }}/..
-          SSH_DIR="/usr2/$USER/.ssh"
-          GITCONFIG="/usr2/$USER/.gitconfig"
-          USER_HOME="/home/$USER"
-
-          docker run \
-            -u ${USER_ID}:${GROUP_ID} \
-            --rm \
-            -v ${WORKSPACE}:${USER_HOME}/workspace \
-            -v ${SSH_DIR}:${USER_HOME}/.ssh \
-            -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
-            -w ${USER_HOME}/workspace \
-            --privileged \
-            ${{ inputs.docker_image }} \
-            bash -c "
-              set -e
-              kas shell meta-ar/ci/${{ matrix.build_matrix.kas_file }} -c '
-                cd ../meta-qcom
-                git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
-                cd ../build
-                umask 022
-                bitbake packagegroup-qcom-audio
-              '
-            "
+          # Cleanup the workspace
+          rm -rf ${{ github.workspace }}/..
+          echo "Workspace cleaned up."

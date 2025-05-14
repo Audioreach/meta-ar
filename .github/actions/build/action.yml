@@ -1,0 +1,57 @@
+---
+name: Build
+description: Build the project using a Docker container
+
+inputs:
+  docker_image:
+    description: Docker image to use for the build job
+    required: true
+
+  uid:
+    description: User ID of the host machine user
+    required: true
+
+  gid:
+    description: Group ID of the host machine user
+    required: true
+
+  kas_file:
+    description: KAS file to use for the build job
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build ${{ env.MACHINE }}
+      shell: bash
+      run: |
+        #!/bin/bash
+        set -e
+
+        # Define variables
+        USER_ID=${{ inputs.uid }}
+        GROUP_ID=${{ inputs.gid }}
+        WORKSPACE=${{ github.workspace }}/..
+        SSH_DIR="/usr2/$USER/.ssh"
+        GITCONFIG="/usr2/$USER/.gitconfig"
+        USER_HOME="/home/$USER"
+
+        docker run \
+          -u ${USER_ID}:${GROUP_ID} \
+          --rm \
+          -v ${WORKSPACE}:${USER_HOME}/workspace \
+          -v ${SSH_DIR}:${USER_HOME}/.ssh \
+          -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
+          -w ${USER_HOME}/workspace \
+          --privileged \
+          ${{ inputs.docker_image }} \
+          bash -c "
+            set -e
+            kas shell meta-ar/ci/${{ inputs.kas_file }} -c '
+              cd ../meta-qcom
+              git fetch git@github.com:qualcomm-linux/meta-qcom.git 78f13cf900b6df8176cbe722576aebbdf9a4d70d && git cherry-pick FETCH_HEAD
+              cd ../build
+              umask 022
+              bitbake packagegroup-qcom-audio
+            '
+          "
