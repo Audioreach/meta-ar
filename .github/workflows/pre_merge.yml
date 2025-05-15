@@ -20,4 +20,3 @@ jobs:
     with:
       build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
       docker_image: ${{ needs.load_parameters.outputs.docker_image }}
-      
