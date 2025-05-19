@@ -24,20 +24,17 @@ PULSEAUDIO_PKGS = " \
     pulseaudio-module-bluez5-device \
 "
 
-PULSEAUDIO_PKGS = " \
+PULSEAUDIO_PKGS += " \
     pulseaudio-module-pal-card \
-    pulseaudio-module-pal-voiceui-card \
 "
 
 RDEPENDS:${PN} = ' \
     tinyalsa \
     tinycompress \
-    qcom-agm \
-    qcom-args \
-    qcom-pal \
-    qcom-audioroute \
-    qcom-acdbdata \
-    qcom-audio-node \
-    qcom-kvh2xml \
+    audioreach-audio-utils \
+    audioreach-conf \
+    audioreach-graphmgr \
+    audioreach-graphservices \
+    audioreach-pal \
     ${PULSEAUDIO_PKGS}  \
 '
