@@ -12,11 +12,11 @@ on:
 
 jobs:
   load_parameters:
-    uses: ./.github/workflows/REUSABLE_WORKFLOW_loading.yml
+    uses: ./.github/workflows/loading.yml
 
   build:
     needs: load_parameters
-    uses: ./.github/workflows/REUSABLE_WORKFLOW_build.yml
+    uses: ./.github/workflows/build.yml
     with:
       build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
       docker_image: ${{ needs.load_parameters.outputs.docker_image }}
