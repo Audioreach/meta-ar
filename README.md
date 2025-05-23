@@ -1,6 +1,6 @@
 # meta-ar
 
-This repository hosts OpenEmbedded meta layer for AudioReach
+This is a temporary repository for hosting the OpenEmbedded meta-layer for AudioReach on Qualcomm platforms.
 
 Install kas latest version with pip.
 
