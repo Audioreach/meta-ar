@@ -1,4 +1,4 @@
-meta-ar
+# meta-ar
 
 This repository hosts OpenEmbedded meta layer for AudioReach
 
@@ -37,5 +37,5 @@ in above step replace yml file based on machines compilation required:
 ->Kodiak: qcs6490-rb3gen2-core-kit.yml
 
 
-License
-meta-audioreach is licensed under the MIT License. Check out the LICENSE for more details
+# License
+meta-audioreach is licensed under the MIT License. Check out the [LICENSE](LICENSE) for more details
