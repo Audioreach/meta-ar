@@ -17,8 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         build_matrix: ${{ fromJson(inputs.build_matrix) }}
-    outputs:
-      jobmatrix: ${{ steps.listjobs.outputs.jobmatrix }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
