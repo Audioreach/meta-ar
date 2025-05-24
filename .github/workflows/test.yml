@@ -51,6 +51,7 @@ jobs:
           if [ ! -f "$target_file" ]; then
             echo "Target file $target_file does not exist."
             echo "target_file=" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
           TARGET=${target_file}
