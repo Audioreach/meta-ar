@@ -58,9 +58,6 @@ runs:
     - name: Update Summary
       shell: bash
       run: |
-        echo "$USER"
-        echo "$(id -u)"
-        echo "$(id -g)"
         echo "## Build Matrix" >> $GITHUB_STEP_SUMMARY
         echo "| Machine | Config File |" >> $GITHUB_STEP_SUMMARY
         echo "| ------- | -------- |" >> $GITHUB_STEP_SUMMARY
