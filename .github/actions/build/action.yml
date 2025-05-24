@@ -59,4 +59,5 @@ runs:
               umask 022
               # Flat build or generate sdk build
               ${{ inputs.build_command }}
+            '
           "
