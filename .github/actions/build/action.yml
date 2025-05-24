@@ -44,6 +44,8 @@ runs:
         # Define variables
         USER_ID=${{ inputs.uid }}
         GROUP_ID=${{ inputs.gid }}
+        SSH_DIR="/usr2/$USER/.ssh"
+        GITCONFIG="/usr2/$USER/.gitconfig"
         WORKSPACE=${{ github.workspace }}/..
         USER_HOME="/home/$USER"
         
@@ -52,6 +54,8 @@ runs:
           --rm \
           --user $(id -u):$(id -g) \
           -v ${WORKSPACE}:${USER_HOME}/workspace \
+          -v ${SSH_DIR}:${USER_HOME}/.ssh \
+          -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
           -w ${USER_HOME}/workspace \
           --privileged \
           test-image \
