@@ -24,6 +24,11 @@ inputs:
     required: false
     default: "bitbake core-image-base"
 
+  build_type:
+    description: Type of build to perform (flat_build or sdk_build)
+    required: false
+    default: "flat_build"
+
 runs:
   using: "composite"
   steps:
@@ -61,3 +66,11 @@ runs:
               ${{ inputs.build_command }}
             '
           "
+
+    # - name: Create tar arcive for the build
+    #   shell: bash
+    #   run: |
+    #     #!/bin/bash
+    #     set -ex
+
+    #     cd 

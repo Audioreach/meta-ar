@@ -67,6 +67,7 @@ jobs:
           gid: ${{ steps.ids.outputs.gid }}
           kas_file: ${{ matrix.build_matrix.kas_file }}
           build_command: ${{ inputs.build_command }}
+          build_type: ${{ inputs.build_type }}
         env:
           MACHINE: ${{ matrix.build_matrix.machine }}
 
