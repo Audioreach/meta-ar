@@ -14,9 +14,20 @@ jobs:
   load_parameters:
     uses: ./.github/workflows/loading.yml
 
-  build:
+  flat_build:
     needs: load_parameters
     uses: ./.github/workflows/build.yml
     with:
       build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
       docker_image: ${{ needs.load_parameters.outputs.docker_image }}
+      build_command: ${{ needs.load_parameters.outputs.flat_build }}
+      build_type: flat_build
+
+  sdk_build:
+    needs: load_parameters
+    uses: ./.github/workflows/build.yml
+    with:
+      build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
+      docker_image: ${{ needs.load_parameters.outputs.docker_image }}
+      build_command: ${{ needs.load_parameters.outputs.sdk_build_command }}
+      build_type: sdk_build

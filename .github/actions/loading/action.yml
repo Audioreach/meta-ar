@@ -11,6 +11,14 @@ outputs:
     description: Docker image
     value: ${{ steps.get-docker-image.outputs.image_name }}
 
+  flat_build:
+    description: Command to run for the flat build
+    value: ${{ steps.set-build-command.outputs.flat_build }}
+
+  sdk_build_command:
+    description: Command to run for the SDK build
+    value: ${{ steps.set-build-command.outputs.sdk_build_command }}
+
 runs:
   using: "composite"
   steps:
@@ -33,3 +41,16 @@ runs:
           const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').toString().trim()
           core.setOutput('image_name', image)
           console.log(image)
+
+    - name: Set the build commands
+      id: set-build-command
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const flat_build = 'bitbake core-image-base'
+          core.setOutput('flat_build', flat_build)
+          console.log("FLAT BUILD COMMAND:", flat_build)
+
+          const sdk = 'bitbake -c populate_sdk'
+          core.setOutput('sdk_build_command', sdk)
+          console.log("SDK BUILD COMMAND:", sdk)
