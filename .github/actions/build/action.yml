@@ -148,6 +148,7 @@ runs:
         aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
       env:
         MACHINE: ${{ env.MACHINE }}
+        BUILD_TYPE: ${{ inputs.build_type }}
 
     - name: Update Summary
       shell: bash
