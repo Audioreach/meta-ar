@@ -69,4 +69,4 @@ runs:
         done
 
         echo "## Docker Image" >> $GITHUB_STEP_SUMMARY
-        echo "${{ steps.get-docker-image.outputs.image_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**${{ steps.get-docker-image.outputs.image_name }}**" >> $GITHUB_STEP_SUMMARY
