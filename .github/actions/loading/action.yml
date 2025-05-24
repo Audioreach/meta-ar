@@ -61,8 +61,10 @@ runs:
         echo "## Build Matrix" >> $GITHUB_STEP_SUMMARY
         echo "| Machine | KAS File |" >> $GITHUB_STEP_SUMMARY
         echo "| ------- | -------- |" >> $GITHUB_STEP_SUMMARY
-        for machine in $(echo "${{ steps.set-matrix.outputs.build_matrix }}" | jq -r '.[].machine'); do
-          kas_file=$(echo "${{ steps.set-matrix.outputs.build_matrix }}" | jq -r ".[] | select(.machine == \"$machine\") | .kas_file")
+        build_matrix=$(echo '${{ steps.set-matrix.outputs.build_matrix }}' | jq -c '.') # Ensure valid JSON format
+        echo "$build_matrix" | jq -c '.[]' | while read -r entry; do
+          machine=$(echo "$entry" | jq -r '.machine')
+          kas_file=$(echo "$entry" | jq -r '.kas_file')
           echo "| $machine | $kas_file |" >> $GITHUB_STEP_SUMMARY
         done
 
