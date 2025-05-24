@@ -67,7 +67,7 @@ runs:
                   echo "," >> ${{ github.workspace }}/presigned_urls.json
                 fi
                 # Append the pre-signed URL to the file
-                echo " \"${file}\": \"${presigned_url}\"" >> ${{ github.workspace }}/presigned_urls.json
+                echo " \"${filename}\": \"${presigned_url}\"" >> ${{ github.workspace }}/presigned_urls.json
                 echo "Pre-signed URL for $file: $presigned_url"
               else
                 echo "Warning: $file does not exist or is not a regular file."

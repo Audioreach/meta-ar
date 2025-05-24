@@ -36,6 +36,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Pull docker Image
+        uses: ./.github/actions/pull_docker_image
+        with:
+          image_name: ${{ inputs.docker_image }}
+          github_token: ${{ secrets.PAT }}
+
       - name: Clone meta-qcom repository
         run: |
           # Clone the meta-qcom repository
@@ -58,6 +64,12 @@ jobs:
         run: |
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
+
+      - name: Set up local git config
+        run: |
+          # set git config for this project only not global
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "github-actions@github.com"
 
       - name: Build for ${{ matrix.build_matrix.machine }}
         uses: ./.github/actions/build

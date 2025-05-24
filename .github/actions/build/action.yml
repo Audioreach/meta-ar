@@ -45,16 +45,12 @@ runs:
         USER_ID=${{ inputs.uid }}
         GROUP_ID=${{ inputs.gid }}
         WORKSPACE=${{ github.workspace }}/..
-        SSH_DIR="/usr2/$USER/.ssh"
-        GITCONFIG="/usr2/$USER/.gitconfig"
         USER_HOME="/home/$USER"
 
         docker run \
           -u ${USER_ID}:${GROUP_ID} \
           --rm \
           -v ${WORKSPACE}:${USER_HOME}/workspace \
-          -v ${SSH_DIR}:${USER_HOME}/.ssh \
-          -v ${GITCONFIG}:${USER_HOME}/.gitconfig \
           -w ${USER_HOME}/workspace \
           --privileged \
           ${{ inputs.docker_image }} \

@@ -8,7 +8,8 @@ on:
 jobs:
   process_urls:
     outputs:
-      flat_build_url: ${{ steps.process_urls.outputs.result }}
+      flat_build_url: ${{ steps.process_urls.outputs.flat_build_url }}
+      filename: ${{ steps.process_urls.outputs.filename }}
     runs-on: self-hosted
     steps:
       - name: Checkout Code
@@ -47,6 +48,7 @@ jobs:
             let flat_build_url = "";
             let flat_build_vision = "";
             let script_file_url = "";
+            let filename= "";
             const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
             // Find the URLs for the specific files
             for (const [path, url] of Object.entries(data)) {
@@ -55,6 +57,7 @@ jobs:
                         flat_build_vision = url; // Assign vision file URL
                     } else {
                         flat_build_url = url; // Assign common tar.gz file URL
+                        filename = path;
                     }
                 } else if (path.endsWith('.sh')) {
                     script_file_url = url; // Store .sh file URL if needed
@@ -63,7 +66,8 @@ jobs:
             // Set outputs for the URLs
             core.setOutput('flat_build_vision', flat_build_vision);
             core.setOutput('script_file_url', script_file_url);
-            return flat_build_url;
+            core.setOutput('flat_build_url', flat_build_url);
+            core.setOutput('filename', filename);
 
   prepare-job-list:
     runs-on: ubuntu-latest
@@ -113,7 +117,7 @@ jobs:
           FIND_PATH="${TARGET#*/}"
           DEVICE_TYPE_PATH="${FIND_PATH%/*}"
           DEVICE_TYPE="${DEVICE_TYPE_PATH#*/}"
-          BUILD_FILE_NAME="core-image-base-qcs6490-rb3gen2-core-kit.rootfs.qcomflash.tar.gz"
+          BUILD_FILE_NAME="${{ needs.process_urls.outputs.filename }}"
           BUILD_DOWNLOAD_URL="${{ needs.process_urls.outputs.flat_build_url }}"
           sed -i "s|{{DEVICE_TYPE}}|${DEVICE_TYPE}|g" "${{ matrix.target }}"
           sed -i "s|{{GITHUB_SHA}}|${GITHUB_SHA}|g" "${{ matrix.target }}"

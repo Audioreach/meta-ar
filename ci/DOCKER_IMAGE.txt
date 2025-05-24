@@ -1,1 +1,1 @@
-test-image:latest
+ar-image:v1.0

@@ -17,6 +17,7 @@ jobs:
   flat_build:
     needs: load_parameters
     uses: ./.github/workflows/build.yml
+    secrets: inherit
     with:
       build_matrix: ${{ needs.load_parameters.outputs.build_matrix }}
       docker_image: ${{ needs.load_parameters.outputs.docker_image }}
@@ -33,5 +34,6 @@ jobs:
   #     build_type: sdk_build
 
   test:
-    needs: flat_build
+    needs: [load_parameters, flat_build]
     uses: ./.github/workflows/test.yml
+    secrets: inherit
