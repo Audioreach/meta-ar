@@ -59,7 +59,7 @@ runs:
       shell: bash
       run: |
         echo "## Build Matrix" >> $GITHUB_STEP_SUMMARY
-        echo "| Machine | KAS File |" >> $GITHUB_STEP_SUMMARY
+        echo "| Machine | Config File |" >> $GITHUB_STEP_SUMMARY
         echo "| ------- | -------- |" >> $GITHUB_STEP_SUMMARY
         build_matrix=$(echo '${{ steps.set-matrix.outputs.build_matrix }}' | jq -c '.') # Ensure valid JSON format
         echo "$build_matrix" | jq -c '.[]' | while read -r entry; do

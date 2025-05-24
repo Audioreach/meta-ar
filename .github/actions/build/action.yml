@@ -156,6 +156,6 @@ runs:
         echo "## Build Summary for ${{ env.MACHINE }}" >> $GITHUB_STEP_SUMMARY
         echo '### :rocket: Build Successful!' >> $GITHUB_STEP_SUMMARY
         echo "- Machine: ${{ env.MACHINE }}" >> $GITHUB_STEP_SUMMARY
-        echo "- KAS File: ${{ inputs.kas_file }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Config File: ${{ inputs.kas_file }}" >> $GITHUB_STEP_SUMMARY
         echo "- Build Type: ${{ inputs.build_type }}" >> $GITHUB_STEP_SUMMARY
         echo "- Build Command: ${{ inputs.build_command }}" >> $GITHUB_STEP_SUMMARY
