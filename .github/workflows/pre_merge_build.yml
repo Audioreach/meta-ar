@@ -31,3 +31,7 @@ jobs:
   #     docker_image: ${{ needs.load_parameters.outputs.docker_image }}
   #     build_command: ${{ needs.load_parameters.outputs.sdk_build_command }}
   #     build_type: sdk_build
+
+  test:
+    needs: flat_build
+    uses: ./.github/workflows/test.yml

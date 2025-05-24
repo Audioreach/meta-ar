@@ -38,6 +38,9 @@ runs:
         #!/bin/bash
         set -e
 
+        # touch file_list.txt
+        touch ${{ github.workspace }}/file_list.txt
+
         # Define variables
         USER_ID=${{ inputs.uid }}
         GROUP_ID=${{ inputs.gid }}
@@ -67,10 +70,79 @@ runs:
             '
           "
 
-    # - name: Create tar arcive for the build
-    #   shell: bash
-    #   run: |
-    #     #!/bin/bash
-    #     set -ex
+    - name: Create tar arcive for the build
+      if: ${{ inputs.build_type == 'flat_build' }}
+      shell: bash
+      run: |
+        #!/bin/bash
+        set -ex
 
-    #     cd 
+        # Process the kas file to remove the .yml extension
+        KAS_FILE="${{ inputs.kas_file }}"
+        KAS_FILE="${KAS_FILE%.yml}"
+
+        cd ..
+        MACHINE=${{ env.MACHINE }}
+        BUILD_DIR=build
+        PUB_DIR=${{ github.workspace }}/pub/${MACHINE}/flat_build
+        mkdir -p $PUB_DIR
+
+        if [[ $KAS_FILE =~ (qcs[0-9]+)-([^ -]*) ]]; then
+          qcs_number="${BASH_REMATCH[1]}"
+          remaining_part="${BASH_REMATCH[2]}"
+        else
+          echo "KAS_FILE does not match the expected pattern."
+          exit 1
+        fi
+
+        # if kas file is qcs9100-ride-sx.yml then we only want core-kit
+        if [[ "${KAS_FILE}" == "qcs6490-rb3gen2-core-kit" ]]; then
+          # tar file for core-kit
+          cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
+          cp dtb-${qcs_number}-addons-${remaining_part}-image.vfat dtb.bin
+          cd ..
+          tar -cjf ${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash
+
+          # tar file for vision-kit
+          cd -
+          cp dtb-${qcs_number}-addons-${remaining_part}-vision-mezz-image.vfat dtb.bin
+          cd ..
+          tar -cjf ${PUB_DIR}/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash
+
+          # create file file_list
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
+        else
+          # tar file for core-kit no vision-kit needed
+          cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
+          cp dtb-${qcs_number}-addons-${remaining_part}-image.vfat dtb.bin
+          cd ..
+          tar -cjf ${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash
+          
+          # create file file_list
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
+        fi
+
+    - name: copy the sdk to the pub directory
+      if: ${{ inputs.build_type == 'sdk_build' }}
+      shell: bash
+      run: |
+        #!/bin/bash
+        set -ex
+
+        cd ..
+        cd build/tmp/deploy/sdk/
+        sdk_file=$(ls poky-glibc-*.sh)
+        PUB_DIR=${{ github.workspace }}/pub/${{ env.MACHINE }}/sdk_build
+        mkdir -p $PUB_DIR
+        cp $sdk_file $PUB_DIR
+        echo "${PUB_DIR}/${sdk_file}" >> ${{ github.workspace }}/file_list.txt
+
+    - name: Upload artifacts
+      uses: ./.github/actions/aws-s3-exchanger
+      with:
+        mode: multi-upload
+        local_file: ${{ github.workspace }}/file_list.txt
+        s3_bucket: qli-stg-kernel-gh-artifacts
+        aws_access_key_id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
