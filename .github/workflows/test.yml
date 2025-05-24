@@ -4,78 +4,32 @@ description: Test trigger workflow
 
 on:
   workflow_call:
+    inputs:
+      build_matrix:
+        required: true
+        type: string
+        description: Build matrix for the test job
 
 jobs:
-  process_urls:
-    outputs:
-      flat_build_url: ${{ steps.process_urls.outputs.flat_build_url }}
-      filename: ${{ steps.process_urls.outputs.filename }}
+  test:
     runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        build_matrix: ${{ fromJson(inputs.build_matrix) }}
+    outputs:
+      jobmatrix: ${{ steps.listjobs.outputs.jobmatrix }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Download Presigned URL list
-        uses: actions/download-artifact@v4
-        with:
-          name: presigned_urls.json
-          path: ${{ github.workspace }}
-
-      - name: Process Presigned URLs
+      - name: Process URLs
         id: process_urls
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const p = require('path');
-            // Helper function to find URL by filename
-            function findUrlByFilename(filename) {
-                for (const [path, url] of Object.entries(data)) {
-                if (path.endsWith(filename)) {
-                    return url;
-                }
-                }
-                return null;
-            }
-            const filePath = p.join(process.env.GITHUB_WORKSPACE, 'presigned_urls.json');
-            if (fs.existsSync(filePath)) {
-                console.log("File exists");
-            } else {
-                console.log("File does not exist");
-                core.setFailed(`File not found: ${filePath}`);
-            }
-            // Read the JSON file
-            let flat_build_url = "";
-            let flat_build_vision = "";
-            let script_file_url = "";
-            let filename= "";
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-            // Find the URLs for the specific files
-            for (const [path, url] of Object.entries(data)) {
-                if (path.endsWith('.tar.gz')) {
-                    if (path.includes('vision')) {
-                        flat_build_vision = url; // Assign vision file URL
-                    } else {
-                        flat_build_url = url; // Assign common tar.gz file URL
-                        filename = path;
-                    }
-                } else if (path.endsWith('.sh')) {
-                    script_file_url = url; // Store .sh file URL if needed
-                }
-            }
-            // Set outputs for the URLs
-            core.setOutput('flat_build_vision', flat_build_vision);
-            core.setOutput('script_file_url', script_file_url);
-            core.setOutput('flat_build_url', flat_build_url);
-            core.setOutput('filename', filename);
+        uses: ./.github/actions/process_urls
+        env:
+          MACHINE: ${{ matrix.build_matrix.machine }}
 
-  prepare-job-list:
-    runs-on: ubuntu-latest
-    needs: process_urls
-    outputs:
-      jobmatrix: ${{ steps.listjobs.outputs.jobmatrix }}
-    steps:
-      - name: Clone repository
+      - name: Clone meta-ar-test repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -85,72 +39,47 @@ jobs:
       - name: Print trigger
         run: |
           echo "Triggered by ${{ github.event_name }}"
-          echo "Build URL: ${{ needs.process_urls.outputs.flat_build_url }}"
+          echo "Build URL: ${{ steps.process_urls.outputs.flat_build_url }}"
+          echo "Build file name: ${{ steps.process_urls.outputs.filename }}"
 
-      - name: "List jobs"
+      - name: Modify test configurations
         id: listjobs
         run: |
-          JOBFILES=$(find ci/lava/ -name *.yaml)
-          JOBFILES=$(echo "$JOBFILES" | sed -e "s/^/\"/" | sed -e "s/$/\",/" | tr -d "\n" | sed -e "s/.$//")
-          JOBFILES="[${JOBFILES}]"
-          J=$(jq -cn --argjson jobfiles "$JOBFILES" '{target: $jobfiles}')
-          echo "jobmatrix=$J" >> $GITHUB_OUTPUT
-          echo "Preparing testjob files"
+          kas_file="${{ matrix.build_matrix.kas_file }}"
+          DIR_NAME="${kas_file%.yml}"
+          target_file="ci/lava/${DIR_NAME}/boot.yaml"
+          if [ ! -f "$target_file" ]; then
+            echo "Target file $target_file does not exist."
+            exit 0
+          fi
 
-  submit-job:
-    needs: [process_urls, prepare-job-list ]
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.prepare-job-list.outputs.jobmatrix) }}
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          repository: Audioreach/meta-ar-test
-          token: ${{ secrets.PAT }}
-
-      - name: "Update test definition ${{ matrix.target }}"
-        run: |
-          TARGET=${{ matrix.target }}
+          TARGET=${target_file}
           FIND_PATH="${TARGET#*/}"
           DEVICE_TYPE_PATH="${FIND_PATH%/*}"
           DEVICE_TYPE="${DEVICE_TYPE_PATH#*/}"
-          BUILD_FILE_NAME="${{ needs.process_urls.outputs.filename }}"
-          BUILD_DOWNLOAD_URL="${{ needs.process_urls.outputs.flat_build_url }}"
-          sed -i "s|{{DEVICE_TYPE}}|${DEVICE_TYPE}|g" "${{ matrix.target }}"
-          sed -i "s|{{GITHUB_SHA}}|${GITHUB_SHA}|g" "${{ matrix.target }}"
+          GITHUB_SHA="${{ github.sha }}"
+          GITHUB_RUN_ID="${{ github.run_id }}"
+          BUILD_FILE_NAME="${{ steps.process_urls.outputs.filename }}"
+          BUILD_DOWNLOAD_URL="${{ steps.process_urls.outputs.flat_build_url }}"
+          sed -i "s|{{DEVICE_TYPE}}|${DEVICE_TYPE}|g" "${target_file}}"
+          sed -i "s|{{GITHUB_SHA}}|${GITHUB_SHA}|g" "${target_file}}"
           ESCAPED_URL=$(echo "$BUILD_DOWNLOAD_URL" | sed 's/[&/?=]/\\&/g')
-          sed -i "s|{{BUILD_DOWNLOAD_URL}}|$ESCAPED_URL|g" "${{ matrix.target }}"
-          sed -i "s|{{BUILD_FILE_NAME}}|${BUILD_FILE_NAME}|g" "${{ matrix.target }}"
-          sed -i "s|{{GITHUB_RUN_ID}}|${GITHUB_RUN_ID}|g" "${{ matrix.target }}"
-          cat "${{ matrix.target }}"
+          sed -i "s|{{BUILD_DOWNLOAD_URL}}|$ESCAPED_URL|g" "${target_file}}"
+          sed -i "s|{{BUILD_FILE_NAME}}|${BUILD_FILE_NAME}|g" "${target_file}}"
+          sed -i "s|{{GITHUB_RUN_ID}}|${GITHUB_RUN_ID}|g" "${target_file}}"
+          cat "${target_file}"
 
-      - name: Submit ${{ matrix.target }}
+          echo "target_file=${target_file}" >> $GITHUB_OUTPUT
+
+      - name: Submit ${{ matrix.build_matrix.machine }}
         id: submit_job
         timeout-minutes: 20
         uses: foundriesio/lava-action@v6
         with:
           lava_token: ${{ secrets.LAVA_TOKEN }}
           lava_url: 'lava.infra.foundries.io'
-          job_definition: ${{ matrix.target }}
+          job_definition: ${{ steps.listjobs.outputs.target_file }}
           wait_for_job: true
           fail_action_on_failure: false
           save_result_as_artifact: true
           save_job_details: true
-
-      - name: Update summary
-        if: success() || failure()
-        shell: bash
-        run: |
-          # Print if the submit was success or failure
-          if [ "${{ steps.submit_job.outcome }}" == "success" ]; then
-            echo "Job submission succeeded"
-            summary=":heavy_check_mark: Job submission succeeded"
-          else
-            echo "Job submission failed"
-            summary=":x: Job submission failed"
-          fi
-
-          echo "$summary" >> $GITHUB_STEP_SUMMARY
