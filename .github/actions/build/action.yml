@@ -144,3 +144,13 @@ runs:
         s3_bucket: qli-stg-kernel-gh-artifacts
         aws_access_key_id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Update Summary
+      shell: bash
+      run: |
+        echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo '### :rocket: Build Successful!' >> $GITHUB_STEP_SUMMARY
+        echo "### Machine: ${{ env.MACHINE }}" >> $GITHUB_STEP_SUMMARY
+        echo "### KAS File: ${{ inputs.kas_file }}" >> $GITHUB_STEP_SUMMARY
+        echo "### Build Type: ${{ inputs.build_type }}" >> $GITHUB_STEP_SUMMARY
+        echo "### Build Command: ${{ inputs.build_command }}" >> $GITHUB_STEP_SUMMARY

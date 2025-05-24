@@ -70,9 +70,3 @@ runs:
 
         echo "## Docker Image" >> $GITHUB_STEP_SUMMARY
         echo "${{ steps.get-docker-image.outputs.image_name }}" >> $GITHUB_STEP_SUMMARY
-
-        echo "## Build Commands" >> $GITHUB_STEP_SUMMARY
-        echo "- Flat Build: \`${{ steps.set-build-command.outputs.flat_build }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- SDK Build: \`${{ steps.set-build-command.outputs.sdk_build_command }}\`" >> $GITHUB_STEP_SUMMARY
-
-        echo "Build parameters loaded successfully." >> $GITHUB_STEP_SUMMARY
