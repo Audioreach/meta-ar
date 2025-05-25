@@ -16,7 +16,7 @@ runs:
     - name: Download Presigned URL list
       uses: actions/download-artifact@v4
       with:
-        name: ${{ env.MACHINE }}_presigned_urls.json
+        name: ${{ env.MACHINE }}_flat_build_presigned_urls.json
         path: ${{ github.workspace }}
 
     - name: Process Presigned URLs
