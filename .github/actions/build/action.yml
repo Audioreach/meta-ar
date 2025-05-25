@@ -103,14 +103,14 @@ runs:
           cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
           cp dtb-${qcs_number}-addons-${remaining_part}-image.vfat dtb.bin
           cd ..
-          tar -czf build-core.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
+          tar -czhf build-core.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
           cp build-core.tar.gz "$PUB_DIR/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz"
 
           # tar file for vision-kit
           cd -
           cp dtb-${qcs_number}-addons-${remaining_part}-vision-mezz-image.vfat dtb.bin
           cd ..
-          tar -czf build-vision.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
+          tar -czhf build-vision.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
           cp build-vision.tar.gz "$PUB_DIR/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz"
 
           # create file file_list
@@ -121,7 +121,7 @@ runs:
           cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
           cp dtb-${qcs_number}-addons-${remaining_part}-image.vfat dtb.bin
           cd ..
-          tar -czf build.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
+          tar -czhf build.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash/
           cp build.tar.gz "$PUB_DIR/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz"
           
           # create file file_list
