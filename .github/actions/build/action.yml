@@ -39,7 +39,9 @@ runs:
         set -e
 
         # touch file_list.txt
-        touch ${{ github.workspace }}/file_list.txt
+        filepath="${{ github.workspace }}/${{ env.MACHINE }}_${{ inputs.build_type }}file_list.txt"
+        echo "filepath=${filepath}" >> $GITHUB_ENV
+        touch $filepath
 
         # Define variables
         USER_ID=${{ inputs.uid }}
@@ -110,8 +112,8 @@ runs:
           tar -cjf ${PUB_DIR}/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash
 
           # create file file_list
-          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
-          echo "${PUB_DIR}/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ env.filepath }}
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}-vision-kit.rootfs.qcomflash.tar.gz" >> ${{ env.filepath }}
         else
           # tar file for core-kit no vision-kit needed
           cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
@@ -120,7 +122,7 @@ runs:
           tar -cjf ${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz core-image-base-${KAS_FILE}.rootfs.qcomflash
           
           # create file file_list
-          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ github.workspace }}/file_list.txt
+          echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ env.filepath }}
         fi
 
     - name: copy the sdk to the pub directory
@@ -136,13 +138,13 @@ runs:
         PUB_DIR=${{ github.workspace }}/pub/${{ env.MACHINE }}/sdk_build
         mkdir -p $PUB_DIR
         cp $sdk_file $PUB_DIR
-        echo "${PUB_DIR}/${sdk_file}" >> ${{ github.workspace }}/file_list.txt
+        echo "${PUB_DIR}/${sdk_file}" >> ${{ env.filepath }}
 
     - name: Upload artifacts
       uses: ./.github/actions/aws-s3-exchanger
       with:
         mode: multi-upload
-        local_file: ${{ github.workspace }}/file_list.txt
+        local_file: ${{ env.filepath }} 
         s3_bucket: qli-stg-kernel-gh-artifacts
         aws_access_key_id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
