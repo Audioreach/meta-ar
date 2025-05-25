@@ -127,6 +127,8 @@ runs:
           # create file file_list
           echo "${PUB_DIR}/core-image-base-${KAS_FILE}.rootfs.qcomflash.tar.gz" >> ${{ env.filepath }}
         fi
+        ls -larth $PUB_DIR
+        echo "Build artifacts created in $PUB_DIR"
 
     - name: copy the sdk to the pub directory
       if: ${{ inputs.build_type == 'sdk_build' }}
@@ -142,6 +144,8 @@ runs:
         mkdir -p $PUB_DIR
         cp $sdk_file $PUB_DIR
         echo "${PUB_DIR}/${sdk_file}" >> ${{ env.filepath }}
+        ls -larth $PUB_DIR
+        echo "SDK artifacts created in $PUB_DIR"
 
     - name: Upload artifacts
       uses: ./.github/actions/aws-s3-exchanger
