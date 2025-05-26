@@ -32,16 +32,6 @@ runs:
           core.setOutput('build_matrix', JSON.stringify(matrix));
           console.log(matrix);
 
-    - name: Get Docker Image
-      id: get-docker-image
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs')
-          const image = fs.readFileSync('./ci/DOCKER_IMAGE.txt').toString().trim()
-          core.setOutput('image_name', image)
-          console.log(image)
-
     - name: Set the build commands
       id: set-build-command
       uses: actions/github-script@v7
@@ -67,6 +57,3 @@ runs:
           kas_file=$(echo "$entry" | jq -r '.kas_file')
           echo "| $machine | $kas_file |" >> $GITHUB_STEP_SUMMARY
         done
-
-        echo "## Docker Image" >> $GITHUB_STEP_SUMMARY
-        echo "**${{ steps.get-docker-image.outputs.image_name }}**" >> $GITHUB_STEP_SUMMARY

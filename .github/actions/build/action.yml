@@ -7,14 +7,6 @@ inputs:
     description: Docker image to use for the build job
     required: true
 
-  uid:
-    description: User ID of the host machine user
-    required: true
-
-  gid:
-    description: Group ID of the host machine user
-    required: true
-
   kas_file:
     description: KAS file to use for the build job
     required: true
@@ -44,8 +36,8 @@ runs:
         touch $filepath
 
         # Define variables
-        USER_ID=${{ inputs.uid }}
-        GROUP_ID=${{ inputs.gid }}
+        USER_ID=$(id -u)
+        GROUP_ID=$(id -g)
         SSH_DIR="/usr2/$USER/.ssh"
         WORKSPACE=${{ github.workspace }}/..
         USER_HOME="/home/$USER"

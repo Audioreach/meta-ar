@@ -8,11 +8,6 @@ on:
         type: string
         description: Build matrix for the build job
 
-      docker_image:
-        required: true
-        type: string
-        description: Docker image to use for the build job
-
       build_command:
         required: false
         type: string
@@ -37,10 +32,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Pull docker Image
-        uses: ./.github/actions/pull_docker_image
-        with:
-          image_name: ${{ inputs.docker_image }}
-          github_token: ${{ secrets.PAT }}
+        id: get-docker-image
+        uses: ./.github/actions/build_docker_image
 
       - name: Clone meta-qcom repository
         run: |
@@ -59,12 +52,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get UID and GID
-        id: ids
-        run: |
-          echo "uid=$(id -u)" >> $GITHUB_OUTPUT
-          echo "gid=$(id -g)" >> $GITHUB_OUTPUT
-
       - name: Set up local git config
         run: |
           # set git config for this project only not global
@@ -74,9 +61,7 @@ jobs:
       - name: Build for ${{ matrix.build_matrix.machine }}
         uses: ./.github/actions/build
         with:
-          docker_image: ${{ inputs.docker_image }}
-          uid: ${{ steps.ids.outputs.uid }}
-          gid: ${{ steps.ids.outputs.gid }}
+          docker_image: ${{ steps.get-docker-image.outputs.image_name }}
           kas_file: ${{ matrix.build_matrix.kas_file }}
           build_command: ${{ inputs.build_command }}
           build_type: ${{ inputs.build_type }}
