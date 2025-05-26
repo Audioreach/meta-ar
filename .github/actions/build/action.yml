@@ -51,7 +51,7 @@ runs:
           -v ${SSH_DIR}:${USER_HOME}/.ssh \
           -w ${USER_HOME}/workspace \
           --privileged \
-          test-image \
+          ${{ inputs.docker_image }} \
           bash -c "
             set -e
             kas shell meta-ar/ci/${{ inputs.kas_file }} -c '
