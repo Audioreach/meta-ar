@@ -19,7 +19,7 @@ runs:
       id: build
       run: |
         echo "::group::$(printf '__________ %-100s' 'build' | tr ' ' _)"
-        docker build -t ar-image:latest --build-args "USER=$USER" --build-args "UID=$(id -u)" --build-args "GID=$(id -g)" -f Dockerfile .
+        docker build -t ar-image:latest --build-args "USER=$(whoami)" --build-args "UID=$(id -u)" --build-args "GID=$(id -g)" -f Dockerfile .
         echo "::endgroup::"
         echo "Docker image ${{ inputs.image_name }} built successfully."
         echo "image_name=${{ inputs.image_name }}" >> $GITHUB_OUTPUT
