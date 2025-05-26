@@ -80,6 +80,6 @@ jobs:
           lava_url: 'lava.infra.foundries.io'
           job_definition: ${{ steps.listjobs.outputs.target_file }}
           wait_for_job: true
-          fail_action_on_failure: false
+          fail_action_on_failure: true
           save_result_as_artifact: true
           save_job_details: true
