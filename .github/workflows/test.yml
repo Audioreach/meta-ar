@@ -32,7 +32,6 @@ jobs:
         with:
           fetch-depth: 0
           repository: Audioreach/meta-ar-test
-          token: ${{ secrets.PAT }}
           
       - name: Print trigger
         run: |
@@ -89,8 +88,8 @@ jobs:
         run: |
           if [ "${{ steps.submit_job.outcome }}" == "success" ]; then
             echo "## Test Job Summary" >> $GITHUB_STEP_SUMMARY
-            echo "Test job for ${{ matrix.build_matrix.machine }} completed successfully." >> $GITHUB_STEP_SUMMARY
+            echo ":heavy_check_mark: Test job for ${{ matrix.build_matrix.machine }} completed successfully." >> $GITHUB_STEP_SUMMARY
           else
             echo "## Test Job Summary" >> $GITHUB_STEP_SUMMARY
-            echo "Test job for ${{ matrix.build_matrix.machine }} failed." >> $GITHUB_STEP_SUMMARY
+            echo ":x: Test job for ${{ matrix.build_matrix.machine }} failed." >> $GITHUB_STEP_SUMMARY
           fi

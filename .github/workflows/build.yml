@@ -34,8 +34,6 @@ jobs:
       - name: Build docker Image
         id: get-docker-image
         uses: ./.github/actions/build_docker_image
-        with:
-          github_token: ${{ secrets.PAT }}
 
       - name: Clone meta-qcom repository
         run: |
@@ -72,8 +70,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
 
-      # - name: Cleanup Workspace
-      #   run: |
-      #     # Cleanup the workspace
-      #     rm -rf ${{ github.workspace }}/../build
-      #     echo "Workspace cleaned up."
+      - name: Cleanup Workspace
+        run: |
+          # Cleanup the workspace
+          rm -rf ${{ github.workspace }}/../build
+          rm -rf ${{ github.workspace }}/../meta-qcom
+          rm -rf pub
+          echo "Workspace cleaned up."

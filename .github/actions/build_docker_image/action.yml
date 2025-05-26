@@ -1,11 +1,6 @@
 name: Build Docker Image
 description: Build Docker Image Action
 
-inputs:
-  github_token:
-    description: GitHub token for authentication
-    required: true
-
 outputs:
   image_name:
     description: Name of the built Docker image
@@ -17,8 +12,8 @@ runs:
     - name: Checkout ar-image repo for Dockerfile
       uses: actions/checkout@v4
       with:
+        fetch-depth: 0
         repository: Audioreach/ar-image
-        token: ${{ inputs.github_token }}
 
     - name: Build Docker Image
       shell: bash
