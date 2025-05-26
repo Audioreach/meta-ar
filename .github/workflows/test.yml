@@ -69,7 +69,7 @@ jobs:
 
           echo "target_file=${target_file}" >> $GITHUB_OUTPUT
 
-      - name: Submit ${{ matrix.build_matrix.machine }}
+      - name: Test ${{ matrix.build_matrix.machine }}
         if: ${{ steps.listjobs.outputs.target_file != '' }}
         id: submit_job
         timeout-minutes: 20
