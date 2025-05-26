@@ -83,6 +83,39 @@ jobs:
           save_result_as_artifact: true
           save_job_details: true
 
+      - name: Download Artifacts
+        if: ${{ steps.submit_job.outcome == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          path: .
+
+      - name: Extract test summary
+        if: ${{ steps.submit_job.outcome == 'success' }}
+        run: |
+          file=$(ls test-results*/*)
+          TESTS=$(grep -oP '<testsuites[^>]+tests="\K[0-9]+' $file)
+          FAILURES=$(grep -oP '<testsuites[^>]+failures="\K[0-9]+' $file)
+          TIME=$(grep -oP '<testsuites[^>]+time="\K[0-9.]+' $file)
+
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Total Tests:** $TESTS" >> $GITHUB_STEP_SUMMARY
+          echo "**Failures:** $FAILURES" >> $GITHUB_STEP_SUMMARY
+          echo "**Execution Time:** $TIME seconds" >> $GITHUB_STEP_SUMMARY
+
+      - name: Extract job summary
+        if: ${{ steps.submit_job.outcome == 'success' }}
+        run: |
+          file=$(ls test-job*/*)
+          JOB_ID=$(jq '.id' $file)
+          STATE=$(jq '.state' $file)
+          SUBMIT_TIME=$(jq '.submit_time' $file)
+          JOB_URL=$(jq -r '.url' $file)
+
+          echo "## Test Job Details" >> $GITHUB_STEP_SUMMARY
+          echo "**Job ID:** $JOB_ID" >> $GITHUB_STEP_SUMMARY
+          echo "**Submit Time:** $SUBMIT_TIME" >> $GITHUB_STEP_SUMMARY
+          echo "**Job URL:** [$JOB_URL]($JOB_URL)" >> $GITHUB_STEP_SUMMARY
+
       - name: Update Summary
         if: success() || failure()
         run: |

@@ -24,7 +24,6 @@ runs:
         echo "::endgroup::"
         echo "Docker image ar-image:latest built successfully."
         echo "image_name=ar-image:latest" >> $GITHUB_OUTPUT
-        echo "Docker image name: ar-image:latest" >> $GITHUB_STEP_SUMMARY
 
     - name: Checkout code
       uses: actions/checkout@v4
