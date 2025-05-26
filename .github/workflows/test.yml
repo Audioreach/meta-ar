@@ -83,3 +83,14 @@ jobs:
           fail_action_on_failure: true
           save_result_as_artifact: true
           save_job_details: true
+
+      - name: Update Summary
+        if: success() || failure()
+        run: |
+          if [ "${{ steps.submit_job.outcome }}" == "success" ]; then
+            echo "## Test Job Summary" >> $GITHUB_STEP_SUMMARY
+            echo "Test job for ${{ matrix.build_matrix.machine }} completed successfully." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Test Job Summary" >> $GITHUB_STEP_SUMMARY
+            echo "Test job for ${{ matrix.build_matrix.machine }} failed." >> $GITHUB_STEP_SUMMARY
+          fi
