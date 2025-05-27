@@ -63,7 +63,7 @@ runs:
           "
         echo "::endgroup::"
 
-    - name: Create tar arcive for the build
+    - name: Create tar archive for the build
       if: ${{ inputs.build_type == 'flat_build' }}
       shell: bash
       run: |
@@ -88,7 +88,8 @@ runs:
           exit 1
         fi
 
-        # if kas file is qcs9100-ride-sx.yml then we only want core-kit
+        # if kas file is qcs6490-rb3gen2-core-kit, then we need to create two tar files
+        # one for core-kit and one for vision-kit
         if [[ "${KAS_FILE}" == "qcs6490-rb3gen2-core-kit" ]]; then
           # tar file for core-kit
           cd $BUILD_DIR/tmp/deploy/images/${KAS_FILE}/core-image-base-${KAS_FILE}.rootfs.qcomflash
@@ -143,7 +144,7 @@ runs:
       with:
         mode: multi-upload
         local_file: ${{ env.filepath }}
-        s3_bucket: qli-prd-kernel-gh-artifacts
+        s3_bucket: qli-prd-audior-gh-artifacts
       env:
         MACHINE: ${{ env.MACHINE }}
         BUILD_TYPE: ${{ inputs.build_type }}

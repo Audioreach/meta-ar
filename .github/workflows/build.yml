@@ -24,16 +24,19 @@ jobs:
   build:
     runs-on:
       group: GHA-Audioreach-SelfHosted-RG
-      labels: [ self-hosted, audior-prd-u2404-x64-large-od-ephem ]
+      labels: [ self-hosted, audior-prd-u2204-x64-large-od-ephem ]
     strategy:
       fail-fast: false
       matrix:
         build_matrix: ${{ fromJson(inputs.build_matrix) }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4   # actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
+          ref: ${{ github.ref }}
 
-      - name: Build docker Image
+      - name: Build docker Image  # Build docker image used to build the project
         id: get-docker-image
         uses: ./.github/actions/build_docker_image
 
@@ -54,6 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # setup local git config as we need to cherrypick patch from meta-qcom
       - name: Set up local git config
         run: |
           # set git config for this project only not global
