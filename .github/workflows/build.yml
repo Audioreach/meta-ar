@@ -30,7 +30,16 @@ jobs:
       matrix:
         build_matrix: ${{ fromJson(inputs.build_matrix) }}
     steps:
-      - name: Checkout Code
+      - name: Checkout Code pre_merge
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4   # actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Checkout Code post_merge
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v4   # actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for all branches and tags
