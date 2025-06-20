@@ -18,15 +18,18 @@ jobs:
       matrix:
         build_matrix: ${{ fromJson(inputs.build_matrix) }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Sync Codebase
+        id: sync
+        uses: Audioreach/meta-ar/.github/actions/sync@main
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
-          ref: ${{ github.ref }}
+          event_name: ${{ github.event_name }}
+          pr_ref: ${{ github.event.pull_request.head.ref }}
+          pr_repo: ${{ github.event.pull_request.head.repo.full_name }}
+          base_ref: ${{ github.ref_name }}
 
       - name: Process URLs
         id: process_urls
-        uses: ./.github/actions/process_urls
+        uses: Audioreach/meta-ar/.github/actions/process_urls@main
         env:
           MACHINE: ${{ matrix.build_matrix.machine }}
           

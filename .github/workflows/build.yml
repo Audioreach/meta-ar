@@ -30,15 +30,18 @@ jobs:
       matrix:
         build_matrix: ${{ fromJson(inputs.build_matrix) }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4   # actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
-          ref: ${{ github.ref }}
-
       - name: Build docker Image  # Build docker image used to build the project
         id: get-docker-image
-        uses: ./.github/actions/build_docker_image
+        uses: Audioreach/meta-ar/.github/actions/build_docker_image@main
+
+      - name: Sync Codebase
+        id: sync
+        uses: Audioreach/meta-ar/.github/actions/sync@main
+        with:
+          event_name: ${{ github.event_name }}
+          pr_ref: ${{ github.event.pull_request.head.ref }}
+          pr_repo: ${{ github.event.pull_request.head.repo.full_name }}
+          base_ref: ${{ github.ref_name }}
 
       - name: Clone meta-qcom repository
         run: |
@@ -65,7 +68,7 @@ jobs:
           git config --local user.email "github-actions@github.com"
 
       - name: Build for ${{ matrix.build_matrix.machine }}
-        uses: ./.github/actions/build
+        uses: Audioreach/meta-ar/.github/actions/build@main
         with:
           docker_image: ${{ steps.get-docker-image.outputs.image_name }}
           kas_file: ${{ matrix.build_matrix.kas_file }}
@@ -75,6 +78,7 @@ jobs:
           MACHINE: ${{ matrix.build_matrix.machine }}
 
       - name: Cleanup Workspace
+        if: always()
         run: |
           # Cleanup the workspace
           rm -rf ${{ github.workspace }}/../build
